@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="StepViewController">
+            <connections>
+                <outlet property="optionsArea" destination="t1G-Rm-WXR" id="RGa-lO-lVx"/>
+                <outlet property="view" destination="c22-O7-iKe" id="NRq-Kx-ntL"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="c22-O7-iKe">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rcg-VY-p5F">
+                    <rect key="frame" x="222" y="235" width="37" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="I2R-Z2-DcT">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="label" id="nye-CU-cGk"/>
+                    </connections>
+                </textField>
+                <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t1G-Rm-WXR">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="59"/>
+                </stackView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="t1G-Rm-WXR" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="213" id="BLc-mT-hK5"/>
+                <constraint firstAttribute="trailing" secondItem="t1G-Rm-WXR" secondAttribute="trailing" id="CSl-f6-Pso"/>
+                <constraint firstAttribute="bottom" secondItem="t1G-Rm-WXR" secondAttribute="bottom" id="E2o-Yv-UnE"/>
+                <constraint firstItem="t1G-Rm-WXR" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="LOA-sb-gS2"/>
+            </constraints>
+        </customView>
+    </objects>
+</document>
