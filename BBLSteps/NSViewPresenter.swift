@@ -10,31 +10,37 @@ import Foundation
 
 
 
-public class NSViewPresenter: Presenter {
+public class NSWindowPresenter: Presenter {
   
   var currentViewController: NSViewController!
   
-  let contentView: NSView
+  let window: NSWindow!
   
-  public init(contentView: NSView) {
-    self.contentView = contentView
+  public init(window: NSWindow) {
+    self.window = window
+    self.window.center()
   }
   
   public func present(_ step: Step) {
     // make a view and add to the content view.
     self.currentViewController = viewControllerFor(step)
     
-    contentView.removeAllSubviews()
-    contentView.addSubview(self.currentViewController.view, fit: true)
-    
+    window.contentView!.removeAllSubviews()
+    window.contentView!.addSubview(self.currentViewController.view, fit: true)
   }
   
+  public func finish() {
+    window.performClose(self)
+  }
+
   func viewControllerFor(_ step: Step) -> NSViewController {
     let vc = StepViewController(nibName: "StepViewController", bundle: Bundle.init(for: type(of: self)))
     vc!.step = step
     return vc!
   }
+  
 }
+
 
 
 class StepViewController: NSViewController {
@@ -97,6 +103,8 @@ class ButtonHolder: NSObject {
   }
 }
 
+
+
 extension NSView {
   
   func addSubview(_ subview: NSView, fit: Bool) {
@@ -109,4 +117,5 @@ extension NSView {
   func removeAllSubviews() {
     self.subviews.forEach { $0.removeFromSuperview() }
   }
+  
 }

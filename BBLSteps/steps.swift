@@ -93,6 +93,7 @@ open class StepSequence {
   
   public func finish() {
     print("\(self) finished presenting.")
+    presenter.finish()
   }
   
   public func enable(option optionName: String) {
@@ -129,5 +130,8 @@ open class StepSequence {
 
 
 public protocol Presenter {
+  
   func present(_ step: Step)
+  
+  func finish()
 }

@@ -19,7 +19,11 @@ public class ConsolePresenter: Presenter {
   public func present(_ step: Step) {
     Prompter(step: step).prompt()
   }
+
+  public func finish() {
+  }
   
+
   struct Prompter {
     let step: Step
     
