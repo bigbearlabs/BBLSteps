@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5172BF911E3E5BB7000A4BF7 /* StepViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5172BF901E3E5BB7000A4BF7 /* StepViewController.xib */; };
+		51451C411E3F1E9900085455 /* NSViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51451C401E3F1E9900085455 /* NSViewPresenter.swift */; };
+		51451C631E3F22B900085455 /* StepViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 51451C621E3F22B900085455 /* StepViewController.xib */; };
 		51A7E0B91E3E95DE000DD551 /* steps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DDF3A31E3C1F96001655CB /* steps.swift */; };
 		51A7E0BA1E3E95E2000DD551 /* ConsolePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DDF3A51E3C9289001655CB /* ConsolePresenter.swift */; };
-		51A7E0BC1E3E9659000DD551 /* IntroWorkflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A7E0BB1E3E9659000DD551 /* IntroWorkflow.swift */; };
 		51A7E0E71E3E97F0000DD551 /* BBLBasics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51A7E0E61E3E97F0000DD551 /* BBLBasics.framework */; };
 		51DDF3D11E3C92F7001655CB /* BBLSteps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51DDF3C81E3C92F7001655CB /* BBLSteps.framework */; };
 		51DDF3D61E3C92F7001655CB /* BBLStepsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DDF3D51E3C92F7001655CB /* BBLStepsTests.swift */; };
@@ -68,8 +68,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5172BF901E3E5BB7000A4BF7 /* StepViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StepViewController.xib; sourceTree = "<group>"; };
-		51A7E0BB1E3E9659000DD551 /* IntroWorkflow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroWorkflow.swift; sourceTree = "<group>"; };
+		51451C401E3F1E9900085455 /* NSViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSViewPresenter.swift; sourceTree = "<group>"; };
+		51451C621E3F22B900085455 /* StepViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StepViewController.xib; sourceTree = "<group>"; };
 		51A7E0E61E3E97F0000DD551 /* BBLBasics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BBLBasics.framework; path = "../../../../../../../Volumes/ramdisk/DerivedData/contexter-diussbvhwfomebclgpkcecfnrgtm/Build/Products/Debug/BBLBasics.framework"; sourceTree = "<group>"; };
 		51DDF3A31E3C1F96001655CB /* steps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = steps.swift; sourceTree = "<group>"; };
 		51DDF3A51E3C9289001655CB /* ConsolePresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsolePresenter.swift; sourceTree = "<group>"; };
@@ -154,6 +154,8 @@
 			children = (
 				51DDF3A31E3C1F96001655CB /* steps.swift */,
 				51DDF3A51E3C9289001655CB /* ConsolePresenter.swift */,
+				51451C401E3F1E9900085455 /* NSViewPresenter.swift */,
+				51451C621E3F22B900085455 /* StepViewController.xib */,
 				51DDF3CA1E3C92F7001655CB /* BBLSteps.h */,
 				51DDF3CB1E3C92F7001655CB /* Info.plist */,
 			);
@@ -190,11 +192,9 @@
 			isa = PBXGroup;
 			children = (
 				51F47EA41E3C9BFE00935EC2 /* AppDelegate.swift */,
-				51A7E0BB1E3E9659000DD551 /* IntroWorkflow.swift */,
 				51F47EA61E3C9BFE00935EC2 /* Assets.xcassets */,
 				51F47EA81E3C9BFE00935EC2 /* MainMenu.xib */,
 				51F47EAB1E3C9BFE00935EC2 /* Info.plist */,
-				5172BF901E3E5BB7000A4BF7 /* StepViewController.xib */,
 			);
 			path = BBLStepsExample;
 			sourceTree = "<group>";
@@ -343,6 +343,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51451C631E3F22B900085455 /* StepViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,7 +359,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				51F47EA71E3C9BFE00935EC2 /* Assets.xcassets in Resources */,
-				5172BF911E3E5BB7000A4BF7 /* StepViewController.xib in Resources */,
 				51F47EAA1E3C9BFE00935EC2 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -370,6 +370,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51451C411E3F1E9900085455 /* NSViewPresenter.swift in Sources */,
 				51DDF3EC1E3C9415001655CB /* ConsolePresenter.swift in Sources */,
 				51DDF3EB1E3C9408001655CB /* steps.swift in Sources */,
 			);
@@ -398,7 +399,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				51F47EA51E3C9BFE00935EC2 /* AppDelegate.swift in Sources */,
-				51A7E0BC1E3E9659000DD551 /* IntroWorkflow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,7 +469,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -511,7 +511,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
