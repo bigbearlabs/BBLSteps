@@ -30,7 +30,8 @@ public class NSWindowPresenter: Presenter {
   }
   
   public func finish() {
-    window.performClose(self)
+//    window.performClose(self)  // doesn't work for window without a close button.
+    window.orderOut(self)
   }
 
   func viewControllerFor(_ step: Step) -> NSViewController {
