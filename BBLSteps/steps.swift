@@ -15,6 +15,8 @@ public struct Step {
   
   public let label: String
   
+  let content: [String:String]
+  
   let options: [String:()->()]   // name : block.
   var enabledOptions: [String]
   
@@ -28,8 +30,9 @@ public struct Step {
     }
   }
 
-  public init(label: String, options: [String:()->()], initiallyEnabled: [String]? = nil) {
+  public init(label: String, options: [String:()->()], content: [String:String] = [:], initiallyEnabled: [String]? = nil) {
     self.label = label
+    self.content = content
     self.options = options
     self.enabledOptions = initiallyEnabled ?? Array(options.keys)
   }
@@ -47,17 +50,27 @@ public struct Step {
 
 
 
+public protocol Presenter {
+  
+  func present(_ step: Step, content: [String:Any]?)
+  
+  func finish()
+}
+
+
+
 open class StepSequence {
   
   var steps: [Step]
-  private let stepDict: [String:Step]
-  private var currentIndex: Int
   
   var currentStep: Step {
     return steps[currentIndex]
   }
   
-  public init(steps: [Step], presenter: Presenter) {
+  private let stepDict: [String:Step]
+  private var currentIndex: Int
+  
+  public init(steps: [Step], content: [String:[String:Any]] = [:], presenter: Presenter) {
     self.steps = steps
     self.stepDict = steps.reduce([:]) {
       var dict = $0
@@ -88,7 +101,7 @@ open class StepSequence {
     // e.g. create views based on the steps to present on a gui.
     // e.g. create a text in / out interface based on the steps to to present on a console.
     
-    self.presenter.present(step)
+    self.presenter.present(step, content: step.content)
   }
   
   public func finish() {
@@ -124,14 +137,9 @@ open class StepSequence {
     })
   }
   
+  
   let presenter: Presenter
 }
 
 
 
-public protocol Presenter {
-  
-  func present(_ step: Step)
-  
-  func finish()
-}

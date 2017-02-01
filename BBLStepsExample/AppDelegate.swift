@@ -85,6 +85,7 @@ class IntroWorkflow: StepSequence {
           ]
         ),
         ],
+      content: content,
       presenter: presenter)
     
     workflow = self

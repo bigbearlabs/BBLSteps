@@ -16,7 +16,7 @@ public class ConsolePresenter: Presenter {
   
   public init() {}
   
-  public func present(_ step: Step) {
+  public func present(_ step: Step, content: [String:Any]?) {
     Prompter(step: step).prompt()
   }
 

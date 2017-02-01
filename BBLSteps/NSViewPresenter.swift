@@ -16,14 +16,15 @@ public class NSWindowPresenter: Presenter {
   
   let window: NSWindow!
   
+  
   public init(window: NSWindow) {
     self.window = window
     self.window.center()
   }
   
-  public func present(_ step: Step) {
+  public func present(_ step: Step, content: [String:Any]?) {
     // make a view and add to the content view.
-    self.currentViewController = viewControllerFor(step)
+    self.currentViewController = viewControllerFor(step, content!)
     
     window.contentView!.removeAllSubviews()
     window.contentView!.addSubview(self.currentViewController.view, fit: true)
@@ -34,9 +35,10 @@ public class NSWindowPresenter: Presenter {
     window.orderOut(self)
   }
 
-  func viewControllerFor(_ step: Step) -> NSViewController {
+  func viewControllerFor(_ step: Step, _ content: [String:Any]) -> NSViewController {
     let vc = StepViewController(nibName: "StepViewController", bundle: Bundle.init(for: type(of: self)))
     vc!.step = step
+    vc!.content = content
     return vc!
   }
   
@@ -63,10 +65,19 @@ class StepViewController: NSViewController {
     }
   }
   
+  var content: [String:Any]? {
+    didSet {
+      self.title = self.content?["title"] as? String
+      self.text = self.content?["text"] as? NSString
+    }
+  }
+  
   // bindings-compatible properties.
   var label: String {
     return self.step.label
   }
+  
+  dynamic var text: NSString?
   
   func optionViewFor(_ option: (String, ()->()) ) -> NSView {
     let view = NSButton(frame: CGRect(x: 0, y: 0, width: 80, height: 20))
