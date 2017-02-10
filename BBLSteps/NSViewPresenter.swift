@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import BBLBasics
 
 
 public class NSWindowPresenter: Presenter {
@@ -113,21 +113,4 @@ class ButtonHolder: NSObject {
   func actionButtonPressed(_ sender: Any) {
     onButtonPress()
   }
-}
-
-
-
-extension NSView {
-  
-  func addSubview(_ subview: NSView, fit: Bool) {
-    self.addSubview(subview)
-    if fit {
-      subview.frame = self.bounds
-    }
-  }
-  
-  func removeAllSubviews() {
-    self.subviews.forEach { $0.removeFromSuperview() }
-  }
-  
 }
