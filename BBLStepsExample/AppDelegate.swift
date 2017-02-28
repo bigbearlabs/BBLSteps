@@ -32,7 +32,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
 // an example sequence of steps that walks the user through highlights of the app.
-class IntroWorkflow: StepSequence {
+class IntroWorkflow: Sequence {
   
   init(presenter: Presenter) {
     var workflow: IntroWorkflow!  // to be set to self so the closures passed to super.init can reference the instance.

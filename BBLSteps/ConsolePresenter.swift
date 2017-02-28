@@ -12,32 +12,47 @@ import Foundation
 
 public class ConsolePresenter: Presenter {
 
-  var sequence: StepSequence!
+  public var sequence: Sequence
   
-  public init() {}
-  
-  public func present(_ step: Step, content: [String:Any]?) {
-    Prompter(step: step).prompt()
+  public func present() {
+    let step = sequence.currentStep
+    Prompter(step: step, presenter: self).prompt()
   }
 
   public func finish() {
+    print("finished presenting \(sequence).")
   }
   
+  
+  public func enable(choice: String) {
+    sequence.currentStep.enable(option: choice)
+  }
+  public func disable(choice: String) {
+    sequence.currentStep.disable(option: choice)
+  }
 
+  
+  public init(sequence: Sequence) {
+    self.sequence = sequence
+  }
+  
+  
   struct Prompter {
     let step: Step
+    let presenter: Presenter
     
     func prompt() {
       print(step.label)
       
-      print("Options: \(Array(step.availableOptions.keys))")
+      print("Options: \(step.choices)")
       var input: String? = nil
       while input == nil {
         print("Your choice:")
         input = readLine(strippingNewline: true)
-        if let option = step.availableOptions[input!] {
-          option()
+        if let handler = step.handlers[input!] {
+          handler({}, presenter)
         }
+        // TODO default to the presenter's handlers -- consult NSWindowPresenter
         else {
           print("choice '\(input)' was not found.")
           

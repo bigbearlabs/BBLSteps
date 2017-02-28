@@ -1,40 +1,56 @@
-
-//
-//  steps.swif.swift
-//  BBLSteps
-//
-//  Created by Andy Park on 28/01/2017.
-//  Copyright © 2017 Big Bear Labs. All rights reserved.
-//
-
 import Foundation
 
 
 
-public struct Step {
+public protocol Step {
+  var label: String { get }
+  
+  var content: [String:String] { get }
+  
+  var choices: [String] { get }  // names of choices the default behaviours of which are defined by presenter.
+  
+  var handlers: [String : (@escaping () -> Void, Presenter) -> Void] { get } // choice : closure(defaultHandler, presenter); can be empty.
+  
+  var enabledOptions: [String] { get set } // to disable / enable options.
+  
+  mutating func enable(option: String)
+  mutating func disable(option: String)
+}
+
+extension Step {
+  mutating public func enable(option: String) {
+    enabledOptions.append(option)
+  }
+  
+  mutating public func disable(option: String) {
+    let index = enabledOptions.index(of: option)
+    enabledOptions.remove(at: index!)
+  }
+}
+
+
+
+// MARK: -
+
+public struct SimpleStep: Step {
   
   public let label: String
   
-  let content: [String:String]
+  public let content: [String:String]
   
-  let options: [String:()->()]   // name : block.
-  var enabledOptions: [String]
+  public let choices: [String]   // names of choices which default behaviours are defined by presenter
+    // TODO make customisable / overridable in Step
   
-  public var availableOptions: [String:()->()] {
-    return options.reduce([:]) { (dict, entry) in
-      var dict = dict
-      if enabledOptions.contains(entry.key) {
-        dict[entry.key] = entry.value
-      }
-      return dict
-    }
-  }
+  public let handlers: [String : (@escaping () -> Void, Presenter) -> Void]
 
-  public init(label: String, options: [String:()->()], content: [String:String] = [:], initiallyEnabled: [String]? = nil) {
+  public var enabledOptions: [String]
+  
+  public init(label: String, choices: [String], content: [String : String] = [:], initiallyEnabled: [String]? = nil, handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
     self.label = label
     self.content = content
-    self.options = options
-    self.enabledOptions = initiallyEnabled ?? Array(options.keys)
+    self.choices = choices
+    self.enabledOptions = initiallyEnabled ?? choices
+    self.handlers = handlers
   }
   
   mutating public func enable(option: String) {
@@ -49,28 +65,92 @@ public struct Step {
 }
 
 
+/// allows a Sequence to use another Sequence as a subsequence (step).
+public struct SequenceStep: Step {
+  
+  var sequence: Sequence
+  
+  var currentStep: Step
 
-public protocol Presenter {
+  public private(set) var isFinished: Bool = false
+
   
-  func present(_ step: Step, content: [String:Any]?)
+  public init(_ sequence: Sequence) {
+    self.sequence = sequence
+    self.currentStep = sequence.currentStep
+  }
   
-  func finish()
+  public mutating func goNext() {
+    sequence.goNext()
+    
+    self.currentStep = sequence.currentStep
+    
+    if sequence.steps.index(where: {$0.label == currentStep.label}) == sequence.steps.count - 1 {
+      self.isFinished = true
+    }
+
+  }
+
+  
+  // MARK: -
+  
+  public var label: String {
+    return currentStep.label
+  }
+  
+  public var content: [String : String] {
+    return currentStep.content
+  }
+  
+  public var handlers: [String : (@escaping () -> Void, Presenter) -> Void] {
+    return currentStep.handlers
+  }
+  
+  public var choices: [String] {
+    return currentStep.choices
+  }
+  
+  public var enabledOptions: [String] {
+    get {
+      return currentStep.enabledOptions
+    }
+    set {
+      currentStep.enabledOptions = newValue
+    }
+  }
+  
 }
 
 
 
-open class StepSequence {
+// MARK: -
+
+open class Sequence {
   
   var steps: [Step]
   
   var currentStep: Step {
-    return steps[currentIndex]
+    get {
+      return steps[currentIndex]
+    }
+    set {
+      // only allow changing current step for subsequences, since it needs to mutate.
+      if newValue is SequenceStep {
+        let index = self.steps.index(where: { $0.label == self.currentStep.label })!
+        self.steps.remove(at: index)
+        self.steps.insert(newValue, at: index)
+      }
+      else {
+        fatalError()
+      }
+    }
   }
   
   private let stepDict: [String:Step]
   private var currentIndex: Int
   
-  public init(steps: [Step], content: [String:[String:Any]] = [:], presenter: Presenter) {
+
+  public init(steps: [Step]) {
     self.steps = steps
     self.stepDict = steps.reduce([:]) {
       var dict = $0
@@ -79,35 +159,39 @@ open class StepSequence {
     }
     
     self.currentIndex = 0
-    
-    self.presenter = presenter
   }
   
   public func goNext() {
-    currentIndex += 1
-    self.present(step: self.currentStep)
+    if var subsequence = self.currentStep as? SequenceStep {
+      // come out of subsequence if we were at its last step.
+      if subsequence.isFinished {
+        currentIndex += 1
+      }
+      else {
+        subsequence.goNext()
+        self.currentStep = subsequence
+      }
+    }
+    else {
+      currentIndex += 1
+    }
+    
+    // finish if we ran out of steps.
+    if !(currentIndex < steps.count) {
+      currentIndex = steps.count - 1
+      self.finish()
+    }
   }
   
   public func goPrevious() {
     currentIndex -= 1
-    self.present(step: self.currentStep)
   }
   
   
-  public func present(step: Step? = nil) {
-    let step = step ?? self.currentStep
-    
-    // use a presentation strategy based on steps to create interaction.
-    // e.g. create views based on the steps to present on a gui.
-    // e.g. create a text in / out interface based on the steps to to present on a console.
-    
-    self.presenter.present(step, content: step.content)
-  }
-  
-  public func finish() {
+  open func finish() {
     print("\(self) finished presenting.")
-    presenter.finish()
   }
+  
   
   public func enable(option optionName: String) {
     var modifiedStep = self.currentStep
@@ -137,9 +221,38 @@ open class StepSequence {
     })
   }
   
-  
-  let presenter: Presenter
 }
 
+
+
+// MARK: -
+
+public protocol Presenter {
+  var sequence: Sequence { get }
+  
+  func present()
+  
+  func goNext()
+  func goPrevious()
+  
+  func finish()
+  
+  func enable(choice: String)
+  func disable(choice: String)
+}
+
+
+
+extension Presenter {
+  public func goNext() {
+    sequence.goNext()
+    self.present()
+  }
+  
+  public func goPrevious() {
+    sequence.goPrevious()
+    self.present()
+  }
+}
 
 
