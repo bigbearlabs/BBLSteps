@@ -11,7 +11,7 @@ public protocol Step {
   
   var handlers: [String : (@escaping () -> Void, Presenter) -> Void] { get } // choice : closure(defaultHandler, presenter); can be empty.
   
-  var enabledOptions: [String] { get set } // to disable / enable options.
+  var enabledOptions: [String] { get set } // to disable / enable choices.  // RENAME to enabledChoices
   
   mutating func enable(option: String)
   mutating func disable(option: String)
@@ -193,7 +193,7 @@ open class Sequence {
   }
   
   
-  public func enable(option optionName: String) {
+  public func enable(option optionName: String) {  // RENAME option -> choice
     var modifiedStep = self.currentStep
     modifiedStep.enable(option: optionName)
     self.steps = self.steps.reduce([], { (acc, step) in
@@ -207,7 +207,7 @@ open class Sequence {
     })
   }
   
-  public func disable(option optionName: String) {
+  public func disable(option optionName: String) {  // RENAME option -> choice
     var modifiedStep = self.currentStep
     modifiedStep.disable(option: optionName)
     self.steps = self.steps.reduce([], { (acc, step) in
