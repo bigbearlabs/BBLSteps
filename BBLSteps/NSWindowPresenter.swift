@@ -51,6 +51,7 @@ public class NSWindowPresenter: Presenter {
     self.currentViewController = viewControllerFor(step)
     
     // display the view.
+    window.title = step.label
     window.contentView!.removeAllSubviews()
     window.contentView!.addSubview(self.currentViewController.view, fit: true)
   }
