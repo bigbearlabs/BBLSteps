@@ -71,13 +71,15 @@ public struct SequenceStep: Step {
   var sequence: Sequence
   
   var currentStep: Step
+  
+  public let sequenceLevelHandlers: [String : (@escaping () -> Void, Presenter) -> Void]
 
   public private(set) var isFinished: Bool = false
 
-  
-  public init(_ sequence: Sequence) {
+  public init(sequence: Sequence, handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
     self.sequence = sequence
     self.currentStep = sequence.currentStep
+    self.sequenceLevelHandlers = handlers
   }
   
   public mutating func goNext() {
@@ -103,7 +105,7 @@ public struct SequenceStep: Step {
   }
   
   public var handlers: [String : (@escaping () -> Void, Presenter) -> Void] {
-    return currentStep.handlers
+    return isFinished ? sequenceLevelHandlers : currentStep.handlers
   }
   
   public var choices: [String] {
