@@ -81,14 +81,14 @@ public struct SequenceStep: Step {
   }
   
   public mutating func goNext() {
-    sequence.goNext()
+    if sequence.goNext() {
     
-    self.currentStep = sequence.currentStep
-    
-    if sequence.steps.index(where: {$0.label == currentStep.label}) == sequence.steps.count - 1 {
-      self.isFinished = true
+      self.currentStep = sequence.currentStep
+      
+      if sequence.steps.index(where: {$0.label == currentStep.label}) == sequence.steps.count - 1 {
+        self.isFinished = true
+      }
     }
-
   }
 
   
@@ -161,7 +161,7 @@ open class Sequence {
     self.currentIndex = 0
   }
   
-  public func goNext() {
+  public func goNext() -> Bool {
     if var subsequence = self.currentStep as? SequenceStep {
       // come out of subsequence if we were at its last step.
       if subsequence.isFinished {
@@ -180,7 +180,9 @@ open class Sequence {
     if !(currentIndex < steps.count) {
       currentIndex = steps.count - 1
       self.finish()
+      return false
     }
+    return true
   }
   
   public func goPrevious() {
@@ -232,7 +234,7 @@ public protocol Presenter {
   
   func present()
   
-  func goNext()
+  func goNext() -> Bool
   func goPrevious()
   
   func finish()
@@ -244,9 +246,13 @@ public protocol Presenter {
 
 
 extension Presenter {
-  public func goNext() {
-    sequence.goNext()
-    self.present()
+  public func goNext() -> Bool {
+    if sequence.goNext() {
+      self.present()
+      return true
+    } else {
+      return false
+    }
   }
   
   public func goPrevious() {
