@@ -20,10 +20,10 @@ public class NSWindowPresenter: Presenter {
   
   let window: NSWindow!
   
-  private let choiceHandlers: [String : () -> Void]
+  private var choiceHandlers: [String : () -> Void]?
   
   func handler(choice: String) -> (() -> Void) {
-    let handler = choiceHandlers[choice] ?? {}
+    let handler = choiceHandlers?[choice] ?? {}
     // if step defines a handler for this choice, return a closure that composes that and default handler.
     if let stepHandler = sequence.currentStep.handlers[choice] {
       return {
@@ -36,11 +36,20 @@ public class NSWindowPresenter: Presenter {
   }
   
   
-  public init(window: NSWindow, sequence: Sequence, choiceHandlers: [String : () -> Void]) {
+  public init(window: NSWindow, sequence: Sequence) {
     self.window = window
     self.sequence = sequence
-    self.choiceHandlers = choiceHandlers
-    
+    self.choiceHandlers = [
+      "next": {
+        self.goNext()
+      },
+      "previous": {
+        self.goPrevious()
+      },
+      "done": {
+        sequence.finish()
+        self.finish()
+      }]
     self.window.center()
   }
   
