@@ -11,6 +11,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="StepViewController">
             <connections>
                 <outlet property="optionsArea" destination="t1G-Rm-WXR" id="RGa-lO-lVx"/>
+                <outlet property="skipCheckBox" destination="Exa-NS-kIG" id="NSJ-8X-FNa"/>
                 <outlet property="view" destination="c22-O7-iKe" id="NRq-Kx-ntL"/>
             </connections>
         </customObject>
@@ -63,15 +64,33 @@ sadlkfjsakldfjadskl
                     </constraints>
                 </stackView>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Fgl-8a-q2X">
-                    <rect key="frame" x="32" y="115.5" width="90" height="90"/>
+                    <rect key="frame" x="32" y="115" width="90" height="90"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="Fgl-8a-q2X" secondAttribute="height" multiplier="1:1" id="Jzi-wn-1l5"/>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="KzF-bj-oAd"/>
                     </constraints>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSInfo" id="t6g-Wq-vnK"/>
                 </imageView>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="Exa-NS-kIG">
+                    <rect key="frame" x="154" y="90" width="289" height="18"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="14" id="P11-1j-SLB"/>
+                    </constraints>
+                    <buttonCell key="cell" type="check" title="Do not show Intro again" bezelStyle="regularSquare" imagePosition="left" inset="2" id="3d4-Oe-onx">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="hidden" keyPath="self.isSkipCheckboxVisible" id="dCA-BX-uVH">
+                            <dictionary key="options">
+                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
+                <constraint firstItem="t1G-Rm-WXR" firstAttribute="top" secondItem="Exa-NS-kIG" secondAttribute="bottom" constant="33" id="6kO-yw-64v"/>
                 <constraint firstItem="Rcg-VY-p5F" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="20" id="74E-cJ-YNN"/>
                 <constraint firstItem="t1G-Rm-WXR" firstAttribute="top" relation="greaterThanOrEqual" secondItem="c22-O7-iKe" secondAttribute="top" constant="213" id="BLc-mT-hK5"/>
                 <constraint firstAttribute="trailing" secondItem="t1G-Rm-WXR" secondAttribute="trailing" id="CSl-f6-Pso"/>
@@ -82,6 +101,8 @@ sadlkfjsakldfjadskl
                 <constraint firstAttribute="trailing" secondItem="clJ-wZ-JuT" secondAttribute="trailing" constant="20" symbolic="YES" id="Tge-Rr-Lnv"/>
                 <constraint firstAttribute="trailing" secondItem="Rcg-VY-p5F" secondAttribute="trailing" constant="20" id="XcL-8Z-rzm"/>
                 <constraint firstItem="clJ-wZ-JuT" firstAttribute="top" secondItem="Rcg-VY-p5F" secondAttribute="bottom" constant="37" id="aXW-ZV-a7O"/>
+                <constraint firstItem="Exa-NS-kIG" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="156" id="bkx-pT-qmD"/>
+                <constraint firstAttribute="trailing" secondItem="Exa-NS-kIG" secondAttribute="trailing" constant="20" id="d7N-8l-szr"/>
                 <constraint firstItem="Fgl-8a-q2X" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="32" id="jDl-YG-TtR"/>
                 <constraint firstItem="clJ-wZ-JuT" firstAttribute="leading" secondItem="Fgl-8a-q2X" secondAttribute="trailing" constant="34" id="sfa-4A-ZRE"/>
                 <constraint firstItem="Rcg-VY-p5F" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" id="tao-Cg-r7A"/>
@@ -89,6 +110,7 @@ sadlkfjsakldfjadskl
             </constraints>
             <point key="canvasLocation" x="165.5" y="325.5"/>
         </customView>
+        <userDefaultsController representsSharedInstance="YES" id="VC2-Jb-ZpG"/>
     </objects>
     <resources>
         <image name="NSInfo" width="32" height="32"/>

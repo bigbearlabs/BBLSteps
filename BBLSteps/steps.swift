@@ -241,6 +241,8 @@ public protocol Presenter {
   
   func enable(choice: String)
   func disable(choice: String)
+
+  func shouldSkipIntro() -> Bool
 }
 
 
@@ -254,6 +256,10 @@ extension Presenter {
   public func goPrevious() {
     sequence.goPrevious()
     self.present()
+  }
+  
+  public func shouldSkipIntro() -> Bool {
+    return false
   }
 }
 

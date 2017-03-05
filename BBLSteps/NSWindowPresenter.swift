@@ -66,7 +66,11 @@ public class NSWindowPresenter: Presenter {
   
   public func enable(choice: String) {
     let vc = self.currentViewController as! StepViewController
-    vc.step.enable(option: choice)
+    if choice == "skipIntroCheckbox" {
+      vc.isSkipCheckboxVisible = true
+    } else {
+      vc.step.enable(option: choice)
+    }
   }
   public func disable(choice: String) {
     let vc = self.currentViewController as! StepViewController
@@ -87,6 +91,10 @@ public class NSWindowPresenter: Presenter {
     return vc!
   }
   
+  public func shouldSkipIntro() -> Bool {
+    let vc = self.currentViewController as! StepViewController
+    return vc.skipCheckBox.state == NSOnState
+  }
 }
 
 
@@ -140,6 +148,10 @@ class StepViewController: NSViewController {
   dynamic var label: String?
   
   dynamic var text: String?
+  
+  dynamic var isSkipCheckboxVisible: Bool = false
+  
+  @IBOutlet weak var skipCheckBox: NSButton!
   
   func optionViewFor(_ choice: String, handler: @escaping ()->()) -> NSView {
     let view = NSButton(frame: CGRect(x: 0, y: 0, width: 80, height: 20))
