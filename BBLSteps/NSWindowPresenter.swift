@@ -20,26 +20,8 @@ public class NSWindowPresenter: Presenter {
   
   let window: NSWindow!
   
-  private var choiceHandlers: [String : () -> Void]?
-  
-  func handler(choice: String) -> (() -> Void) {
-    let handler = choiceHandlers?[choice] ?? {}
-    // if step defines a handler for this choice, return a closure that composes that and default handler.
-    if let stepHandler = sequence.currentStep.handlers[choice] {
-      return {
-        stepHandler(handler, self)
-      }
-    }
-    else {
-      return handler
-    }
-  }
-  
-  
-  public init(window: NSWindow, sequence: Sequence) {
-    self.window = window
-    self.sequence = sequence
-    self.choiceHandlers = [
+  private lazy var choiceHandlers: [String : () -> Void] = {
+    [
       "next": {
         self.goNext()
       },
@@ -47,9 +29,15 @@ public class NSWindowPresenter: Presenter {
         self.goPrevious()
       },
       "done": {
-        sequence.finish()
+        self.sequence.finish()
         self.finish()
       }]
+  }()
+  
+  
+  public init(window: NSWindow, sequence: Sequence) {
+    self.window = window
+    self.sequence = sequence
     self.window.center()
   }
   
@@ -85,12 +73,26 @@ public class NSWindowPresenter: Presenter {
   
   private func viewControllerFor(_ step: Step) -> NSViewController {
     let vc = StepViewController(nibName: "StepViewController", bundle: Bundle.init(for: type(of: self)))
-//    vc!.step = step
-//    vc!.content = content
     vc!.set(step: step, presenter: self)
     return vc!
   }
   
+  func handler(choice: String) -> (() -> Void) {
+    let handler = choiceHandlers[choice] ?? {}
+    
+    // if step defines a handler for this choice, return a closure that composes that and default handler.
+    if let stepHandler = sequence.currentStep.handlers[choice] {
+      return {
+        stepHandler(handler, self)
+      }
+    }
+    else {
+      return handler
+    }
+  }
+  
+
+  // FIXME detail leak from `contexter`.
   public func shouldSkipIntro() -> Bool {
     let vc = self.currentViewController as! StepViewController
     return vc.skipCheckBox.state == NSOnState
@@ -101,7 +103,7 @@ public class NSWindowPresenter: Presenter {
 
 class StepViewController: NSViewController {
   
-  @IBOutlet weak var optionsArea: NSStackView!
+  @IBOutlet weak var optionsArea: NSStackView!  // RENAME to choicesArea
   
   weak var presenter: NSWindowPresenter!
   
@@ -149,11 +151,14 @@ class StepViewController: NSViewController {
   
   dynamic var text: String?
   
-  dynamic var isSkipCheckboxVisible: Bool = false
+  // FIXME details from the 'skip' feature for `contexter`.
   
+  dynamic var isSkipCheckboxVisible: Bool = false
+
   @IBOutlet weak var skipCheckBox: NSButton!
   
-  func optionViewFor(_ choice: String, handler: @escaping ()->()) -> NSView {
+  
+  private func optionViewFor(_ choice: String, handler: @escaping ()->()) -> NSView {
     let view = NSButton(frame: CGRect(x: 0, y: 0, width: 80, height: 20))
     view.title = choice
     let buttonHolder = ButtonHolder(button: view, onPress: handler)
