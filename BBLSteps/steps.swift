@@ -74,7 +74,7 @@ public struct SequenceStep: Step {
   
   public let sequenceLevelHandlers: [String : (@escaping () -> Void, Presenter) -> Void]
 
-  public private(set) var isFinished: Bool = false
+  public fileprivate(set) var isFinished: Bool = false
 
   public init(sequence: Sequence, handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
     self.sequence = sequence
@@ -148,8 +148,8 @@ open class Sequence {
     }
   }
   
-  private let stepDict: [String:Step]
-  private var currentIndex: Int
+  fileprivate let stepDict: [String:Step]
+  fileprivate var currentIndex: Int
   
 
   public init(steps: [Step]) {
@@ -163,7 +163,7 @@ open class Sequence {
     self.currentIndex = 0
   }
   
-  public func goNext() {
+  open func goNext() {
     if var subsequence = self.currentStep as? SequenceStep {
       // come out of subsequence if we were at its last step.
       if subsequence.isFinished {
@@ -185,7 +185,7 @@ open class Sequence {
     }
   }
   
-  public func goPrevious() {
+  open func goPrevious() {
     currentIndex -= 1
   }
   
@@ -195,7 +195,7 @@ open class Sequence {
   }
   
   
-  public func enable(option optionName: String) {  // RENAME option -> choice
+  open func enable(option optionName: String) {  // RENAME option -> choice
     var modifiedStep = self.currentStep
     modifiedStep.enable(option: optionName)
     self.steps = self.steps.reduce([], { (acc, step) in
@@ -209,7 +209,7 @@ open class Sequence {
     })
   }
   
-  public func disable(option optionName: String) {  // RENAME option -> choice
+  open func disable(option optionName: String) {  // RENAME option -> choice
     var modifiedStep = self.currentStep
     modifiedStep.disable(option: optionName)
     self.steps = self.steps.reduce([], { (acc, step) in

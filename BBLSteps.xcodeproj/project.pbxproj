@@ -298,6 +298,7 @@
 					51DDF3C71E3C92F7001655CB = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = XK44TD8U4S;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 					51DDF3CF1E3C92F7001655CB = {

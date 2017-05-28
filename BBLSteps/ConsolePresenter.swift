@@ -10,16 +10,16 @@ import Foundation
 
 
 
-public class ConsolePresenter: Presenter {
+open class ConsolePresenter: Presenter {
 
-  public var sequence: Sequence
+  open var sequence: Sequence
   
-  public func present() {
+  open func present() {
     let step = sequence.currentStep
     Prompter(step: step, presenter: self).prompt()
   }
 
-  public func finish() {
+  open func finish() {
     print("finished presenting \(sequence).")
   }
   
@@ -54,7 +54,7 @@ public class ConsolePresenter: Presenter {
         }
         // TODO default to the presenter's handlers -- consult NSWindowPresenter
         else {
-          print("choice '\(input)' was not found.")
+          print("choice '\(String(describing: input))' was not found.")
           
           input = nil
         }
