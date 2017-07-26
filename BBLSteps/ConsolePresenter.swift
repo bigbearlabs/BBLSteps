@@ -25,10 +25,10 @@ open class ConsolePresenter: Presenter {
   
   
   public func enable(choice: String) {
-    sequence.currentStep.enable(option: choice)
+    sequence.currentStep.enable(choice: choice)
   }
   public func disable(choice: String) {
-    sequence.currentStep.disable(option: choice)
+    sequence.currentStep.disable(choice: choice)
   }
 
   

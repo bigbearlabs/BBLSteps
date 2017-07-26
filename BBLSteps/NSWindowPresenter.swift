@@ -28,7 +28,6 @@ public class NSWindowPresenter: Presenter {
         self.goPrevious()
       },
       "done": {
-        self.sequence.finish()
         self.finish()
       }]
   }()
@@ -56,12 +55,12 @@ public class NSWindowPresenter: Presenter {
     if choice == "skipIntroCheckbox" {
       vc.isSkipCheckboxVisible = true
     } else {
-      vc.step.enable(option: choice)
+      vc.step.enable(choice: choice)
     }
   }
   public func disable(choice: String) {
     let vc = self.currentViewController as! StepViewController
-    vc.step.disable(option: choice)
+    vc.step.disable(choice: choice)
   }
 
   public func finish() {
@@ -129,13 +128,8 @@ class StepViewController: NSViewController {
       self.optionsArea.removeAllSubviews()
       self.buttonHolders = []
   
-  //      self.step.availableOptions.reversed().forEach { (k, v) in
-  //        let optionView = optionViewFor((k, v))
-  //        optionsArea.addArrangedSubview(optionView)
-  //      }
-  
-      let choiceControls = self.step.enabledOptions.map { choice in
-        return optionViewFor(choice, handler: self.presenter.handler(choice: choice))
+      let choiceControls = self.step.enabledChoices.map { choice in
+        return viewFor(choice: choice, handler: self.presenter.handler(choice: choice))
       }
   
       choiceControls.forEach {
@@ -157,7 +151,7 @@ class StepViewController: NSViewController {
   @IBOutlet weak var skipCheckBox: NSButton!
   
   
-  private func optionViewFor(_ choice: String, handler: @escaping ()->()) -> NSView {
+  private func viewFor(choice: String, handler: @escaping ()->()) -> NSView {
     let view = NSButton(frame: CGRect(x: 0, y: 0, width: 80, height: 20))
     view.title = choice
     let buttonHolder = ButtonHolder(button: view, onPress: handler)

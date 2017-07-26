@@ -2,164 +2,39 @@ import Foundation
 
 
 
-public protocol Step {
-  var label: String { get }
-  
-  var content: [String:String] { get }
-  
-  var choices: [String] { get }  // names of choices the default behaviours of which are defined by presenter.
-  
-  var handlers: [String : (@escaping () -> Void, Presenter) -> Void] { get } // choice : closure(defaultHandler, presenter); can be empty.
-  
-  var enabledOptions: [String] { get set } // to disable / enable choices.  // RENAME to enabledChoices
-  
-  mutating func enable(option: String)
-  mutating func disable(option: String)
-}
-
-extension Step {
-  mutating public func enable(option: String) {
-    enabledOptions.append(option)
-  }
-  
-  mutating public func disable(option: String) {
-    let index = enabledOptions.index(of: option)
-    enabledOptions.remove(at: index!)
-  }
-}
-
-
-
-// MARK: -
-
-public struct SimpleStep: Step {
-  
-  public let label: String
-  
-  public let content: [String:String]
-  
-  public let choices: [String]   // names of choices which default behaviours are defined by presenter
-    // TODO make customisable / overridable in Step
-  
-  public let handlers: [String : (@escaping () -> Void, Presenter) -> Void]
-
-  public var enabledOptions: [String]
-  
-  public init(label: String, choices: [String], content: [String : String] = [:], initiallyEnabled: [String]? = nil, handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
-    self.label = label
-    self.content = content
-    self.choices = choices
-    self.enabledOptions = initiallyEnabled ?? choices
-    self.handlers = handlers
-  }
-  
-  mutating public func enable(option: String) {
-    enabledOptions.append(option)
-  }
-  
-  mutating public func disable(option: String) {
-    let index = enabledOptions.index(of: option)
-    enabledOptions.remove(at: index!)
-  }
-  
-}
-
-
-/// allows a Sequence to use another Sequence as a subsequence (step).
-public struct SequenceStep: Step {
-  
-  var sequence: Sequence
-  
-  var currentStep: Step
-  
-  public let sequenceLevelHandlers: [String : (@escaping () -> Void, Presenter) -> Void]
-
-  public fileprivate(set) var isFinished: Bool = false
-
-  public init(sequence: Sequence, handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
-    self.sequence = sequence
-    self.currentStep = sequence.currentStep
-    self.sequenceLevelHandlers = handlers
-  }
-  
-  public mutating func goNext() {
-    sequence.goNext()
-    
-    self.currentStep = sequence.currentStep
-    
-    if sequence.steps.index(where: {$0.label == currentStep.label}) == sequence.steps.count - 1 {
-      self.isFinished = true
-    }
-
-  }
-
-  
-  // MARK: -
-  
-  public var label: String {
-    return currentStep.label
-  }
-  
-  public var content: [String : String] {
-    return currentStep.content
-  }
-  
-  public var handlers: [String : (@escaping () -> Void, Presenter) -> Void] {
-    return isFinished ? sequenceLevelHandlers : currentStep.handlers
-  }
-  
-  public var choices: [String] {
-    return currentStep.choices
-  }
-  
-  public var enabledOptions: [String] {
-    get {
-      return currentStep.enabledOptions
-    }
-    set {
-      currentStep.enabledOptions = newValue
-    }
-  }
-  
-}
-
-
-
-// MARK: -
-
+/// Models a series of steps.
 open class Sequence {
   
   var steps: [Step]
   
   var currentStep: Step {
     get {
+      // find the first step where condition evaluates to true.
+      for step in steps {
+        if steps.index(where: { $0.label == step.label })! < currentIndex {
+          continue
+        }
+        if step.shouldPresent {
+          return step
+        }
+      }
+      // no step has condition met, just return the last one.
       return steps[currentIndex]
     }
     set {
-      // only allow changing current step for subsequences, since it needs to mutate.
-      if newValue is SequenceStep {
-        let index = self.steps.index(where: { $0.label == self.currentStep.label })!
-        self.steps.remove(at: index)
-        self.steps.insert(newValue, at: index)
-      }
-      else {
+      if let index = steps.index(where: { $0.label == newValue.label }) {
+        currentIndex = index
+      } else {
         fatalError()
       }
     }
   }
   
-  fileprivate let stepDict: [String:Step]
   fileprivate var currentIndex: Int
   
-
+  
   public init(steps: [Step]) {
     self.steps = steps
-    self.stepDict = steps.reduce([:]) {
-      var dict = $0
-      dict[$1.label] = $1
-      return dict
-    }
-    
     self.currentIndex = 0
   }
   
@@ -181,49 +56,169 @@ open class Sequence {
     // finish if we ran out of steps.
     if !(currentIndex < steps.count) {
       currentIndex = steps.count - 1
-      self.finish()
+      print("\(self) finished.")
+      return
     }
+    
   }
   
   open func goPrevious() {
     currentIndex -= 1
   }
   
+  // MARK: -
   
-  open func finish() {
-    print("\(self) finished presenting.")
+  var isFinished: Bool {
+    return self.currentIndex >= self.steps.count - 1
+  }
+}
+
+
+
+public protocol Step {
+  
+  var shouldPresent: Bool { get }
+  
+  var label: String { get }
+  
+  var content: [String : String] { get }
+  
+  var choices: [String] { get }  // names of choices the default behaviours of which are defined by presenter.
+  
+  var handlers: [String : (@escaping () -> Void, Presenter) -> Void] { get } // choice : closure(defaultHandler, presenter); can be empty.
+  
+  var enabledChoices: [String] { get set }
+  
+  mutating func enable(choice: String)
+  mutating func disable(choice: String)
+  
+}
+
+
+
+extension Step {
+  
+  mutating public func enable(choice: String) {
+    self.enabledChoices.append(choice)
   }
   
-  
-  open func enable(option optionName: String) {  // RENAME option -> choice
-    var modifiedStep = self.currentStep
-    modifiedStep.enable(option: optionName)
-    self.steps = self.steps.reduce([], { (acc, step) in
-      var acc = acc
-      if step.label == modifiedStep.label {
-        acc.append(modifiedStep)
-      } else {
-        acc.append(step)
-      }
-      return acc
-    })
-  }
-  
-  open func disable(option optionName: String) {  // RENAME option -> choice
-    var modifiedStep = self.currentStep
-    modifiedStep.disable(option: optionName)
-    self.steps = self.steps.reduce([], { (acc, step) in
-      var acc = acc
-      if step.label == modifiedStep.label {
-        acc.append(modifiedStep)
-      } else {
-        acc.append(step)
-      }
-      return acc
-    })
+  mutating public func disable(choice: String) {
+    let index = self.enabledChoices.index(of: choice)
+    self.enabledChoices.remove(at: index!)
   }
   
 }
+
+
+
+// MARK: -
+
+public struct BasicStep: Step {
+  
+  public let condition: () -> Bool
+  
+  public let label: String
+  
+  public let content: [String:String]
+  
+  public let choices: [String]   // names of choices which default behaviours are defined by presenter
+    // TODO make customisable / overridable in Step
+  
+  public let handlers: [String : (@escaping () -> Void, Presenter) -> Void]
+
+  public var enabledChoices: [String]
+  
+  
+  public init(
+              label: String,
+              choices: [String],
+              content: [String : String] = [:],
+              initiallyEnabled: [String]? = nil,
+              condition: @escaping () -> Bool = { return true },
+              handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
+    self.label = label
+    self.content = content
+    self.choices = choices
+    self.enabledChoices = initiallyEnabled ?? choices
+    self.condition = condition
+    self.handlers = handlers
+  }
+  
+  public var shouldPresent: Bool {
+    return self.condition()
+  }
+}
+
+
+/// allows a Sequence to use another Sequence as a subsequence (step).
+public struct SequenceStep: Step {
+  
+  var sequence: Sequence
+  
+  public let sequenceLevelHandlers: [String : (@escaping () -> Void, Presenter) -> Void]
+  
+  
+  public init(sequence: Sequence, handlers: [String : (@escaping () -> Void, Presenter) -> Void] = [:]) {
+    self.sequence = sequence
+    self.sequenceLevelHandlers = handlers
+  }
+  
+  public mutating func goNext() {
+    sequence.goNext()
+    
+  }
+
+  
+  // MARK: -
+  
+  var currentStep: Step {
+    get {
+      return self.sequence.currentStep
+    }
+    set {
+      self.sequence.currentStep = newValue
+    }
+  }
+  
+  public var enabledChoices: [String] {
+    get {
+      return currentStep.enabledChoices
+    }
+    set {
+      currentStep.enabledChoices = newValue
+    }
+  }
+  
+  public var label: String {
+    return currentStep.label
+  }
+  
+  public var content: [String : String] {
+    return currentStep.content
+  }
+  
+  public var shouldPresent: Bool {
+    return true
+  }
+  
+  public var handlers: [String : (@escaping () -> Void, Presenter) -> Void] {
+    var handlers = currentStep.handlers
+    for (handlerId, handler) in sequenceLevelHandlers {
+      handlers[handlerId] = handler
+    }
+    return handlers
+  }
+  
+  public var choices: [String] {
+    return currentStep.choices
+  }
+  
+  public var isFinished: Bool {
+    return self.sequence.isFinished
+  }
+  
+}
+
 
 
 

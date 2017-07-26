@@ -54,7 +54,7 @@ class IntroWorkflow: Sequence {
               workflow.goNext()
               workflow.expectTrialMoveCompleted() {
                 // enable the 'next' control only when the move has been made successfully.
-                workflow.enable(option: "next")
+                workflow.enable(choice: "next")
               }
             },
             "previous": {
