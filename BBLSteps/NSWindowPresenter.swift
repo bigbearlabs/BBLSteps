@@ -70,9 +70,9 @@ public class NSWindowPresenter: Presenter {
 
   
   private func viewControllerFor(_ step: Step) -> NSViewController {
-    let vc = StepViewController(nibName: "StepViewController", bundle: Bundle.init(for: type(of: self)))
-    vc!.set(step: step, presenter: self)
-    return vc!
+    let vc = StepViewController(nibName: NSNib.Name(rawValue: "StepViewController"), bundle: Bundle.init(for: type(of: self)))
+    vc.set(step: step, presenter: self)
+    return vc
   }
   
   func handler(choice: String) -> (() -> Void) {
@@ -93,7 +93,7 @@ public class NSWindowPresenter: Presenter {
   // FIXME detail leak from `contexter`.
   public func shouldSkipIntro() -> Bool {
     let vc = self.currentViewController as! StepViewController
-    return vc.skipCheckBox.state == NSOnState
+    return vc.skipCheckBox.state == .on
   }
 }
 
@@ -140,13 +140,13 @@ class StepViewController: NSViewController {
   
 
   // bindings-compatible properties.
-  dynamic var label: String?
+  @objc dynamic var label: String?
   
-  dynamic var text: String?
+  @objc dynamic var text: String?
   
   // FIXME details from the 'skip' feature for `contexter`.
   
-  dynamic var isSkipCheckboxVisible: Bool = false
+  @objc dynamic var isSkipCheckboxVisible: Bool = false
 
   @IBOutlet weak var skipCheckBox: NSButton!
   
@@ -181,7 +181,7 @@ class ButtonHolder: NSObject {
     
   }
   
-  func actionButtonPressed(_ sender: Any) {
+  @objc func actionButtonPressed(_ sender: Any) {
     onButtonPress()
   }
 }
