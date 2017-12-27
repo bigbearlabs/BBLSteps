@@ -40,14 +40,16 @@ public class NSWindowPresenter: Presenter {
   }
   
   public func present() {
-    let step = sequence.currentStep
+    DispatchQueue.main.async {
+      let step = self.sequence.currentStep
 
-    // make a view and add to the content view.
-    self.currentViewController = viewControllerFor(step)
-    
-    // display the view.
-    window.contentView!.removeAllSubviews()
-    window.contentView!.addSubview(self.currentViewController.view, fit: true)
+      // make a view and add to the content view.
+      self.currentViewController = self.viewControllerFor(step)
+      
+      // display the view.
+      self.window.contentView!.removeAllSubviews()
+      self.window.contentView!.addSubview(self.currentViewController.view, fit: true)
+    }
   }
   
   public func enable(choice: String) {
