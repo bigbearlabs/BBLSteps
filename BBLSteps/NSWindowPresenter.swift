@@ -72,7 +72,7 @@ public class NSWindowPresenter: Presenter {
 
   
   private func viewControllerFor(_ step: Step) -> NSViewController {
-    let vc = StepViewController(nibName: NSNib.Name(rawValue: "StepViewController"), bundle: Bundle.init(for: type(of: self)))
+    let vc = StepViewController(nibName: "StepViewController", bundle: Bundle.init(for: type(of: self)))
     vc.set(step: step, presenter: self)
     return vc
   }
